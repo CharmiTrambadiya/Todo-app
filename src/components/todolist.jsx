@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import TodoItems from "./todoitem";
-import {Container,Row,Col} from 'react-bootstrap'
+import { Container, Row, Col } from "react-bootstrap";
+// import Tables from "./table";
 
 class TodoList extends Component {
   constructor(props) {
@@ -11,6 +12,7 @@ class TodoList extends Component {
     this.addItem = this.addItem.bind(this);
     this.deleteItem = this.deleteItem.bind(this);
     this.filterTodo = this.filterTodo.bind(this);
+    this.editItem = this.editItem.bind(this);
   }
   addItem(e) {
     if (this.inputValue.value !== "") {
@@ -18,7 +20,7 @@ class TodoList extends Component {
         text: this.inputValue.value,
         isEdit: false
       };
-      this.setState((prevState) => {
+      this.setState(prevState => {
         return {
           items: prevState.items.concat(newItem)
         };
@@ -45,11 +47,13 @@ class TodoList extends Component {
   filterTodo(e) {
     var li = document.getElementsByClassName("names");
     var updatedList = this.state.items;
-    var filteredList = updatedList.filter(obj => obj.text.indexOf(e.target.value) > -1);
+    var filteredList = updatedList.filter(
+      obj => obj.text.indexOf(e.target.value) > -1
+    );
     for (var i = 0; i < li.length; i++) {
       var indexOfLi = li[i];
       var span = indexOfLi.getElementsByTagName("span")[0];
-      console.log(filteredList, e.target.value)
+      // console.log(filteredList, e.target.value);
       if (filteredList.filter(obj => obj.text === span.innerText).length) {
         indexOfLi.style.display = "";
       } else {
@@ -57,27 +61,18 @@ class TodoList extends Component {
       }
     }
   }
- editItem() {
-  // var list = document.querySelector('li');
-  // var editList = document.querySelector('names');
-  //   editList.onclick = function(){
-  //     list.setAttribute("contentEditable", true);
-  //   }
-  var li = document.getElementsByClassName("names");
-    for (var i = 0; i < li.length; i++) {
-        document.querySelectorAll("li")[i].addEventListener("click", function () {
-
-            this.parentElement.querySelector("names").setAttribute("contenteditable", "true");
-            this.parentElement.querySelector("names").addEventListener("keypress", enterPress);
-
-            function enterPress(event) {
-                if (event.keyCode === 13) {
-                    this.setAttribute("contenteditable", "false");
-                }
-            }
-        });
-    }
-}
+  editItem(index) {
+    // console.log(index);
+    let tempItems = this.state.items;
+    // console.log(tempItems);
+    let changedItem = tempItems[index];
+    // console.log(changedItem);
+    changedItem.isEdit = !changedItem.isEdit;
+    // console.log(changedItem);
+    tempItems[index] = changedItem;
+    this.setState({ items: tempItems })
+    // console.log(this.state.items);
+  }
   render() {
     return (
       <div className="todoList container">
@@ -86,13 +81,15 @@ class TodoList extends Component {
             <Container>
               <Row>
                 <Col md={6} className="text-center">
-                  <input ref={(a) => this.inputValue = a}
-                   placeholder="Enter your name">
-                  </input>
+                  <input
+                    ref={a => (this.inputValue = a)}
+                    placeholder="Enter your name"
+                  />
                   <button type="submit">Add</button>
                 </Col>
                 <Col md={6} className="text-center">
-                  <input  type="text"
+                  <input
+                    type="text"
                     className="center-block"
                     placeholder="Search here..."
                     onChange={this.filterTodo}
@@ -102,10 +99,15 @@ class TodoList extends Component {
             </Container>
           </form>
         </div>
-        <TodoItems entries={this.state.items}
-          delete={this.deleteItem} />
+        <TodoItems
+          entries={this.state.items}
+          editItem={this.editItem}
+          delete={this.deleteItem}
+        />
+         {/* <Tables /> */}
       </div>
     );
   }
 }
 export default TodoList;
+
